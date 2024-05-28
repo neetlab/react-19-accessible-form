@@ -2,14 +2,22 @@
 
 import fs from "node:fs/promises";
 import { randomUUID } from "node:crypto";
+import { setTimeout } from "node:timers/promises";
 
 import { Entry, fromCSV, toCSV } from "@/models/entry";
+import { revalidatePath } from "next/cache";
 
-export const createEntry = async (fd: FormData) => {
+export const list = async () => {
+  await setTimeout(1000);
+  const entries = await fs.readFile("data.csv", "utf-8");
+  return fromCSV(entries);
+};
+
+export const create = async (fd: FormData) => {
   const title = fd.get("title") as string;
 
   if (title.length === 0) {
-    throw new Error("Title is required");
+    return "Title is required"
   }
 
   const entry = {
@@ -18,9 +26,33 @@ export const createEntry = async (fd: FormData) => {
     completed: false,
   } satisfies Entry;
 
-  const entries = await fs.readFile("data.csv", "utf-8")
-  const newEntries = [...fromCSV(entries), entry];
+  const entries = await list();
+  const newEntries = [...entries, entry];
+  await fs.writeFile("data.csv", toCSV(newEntries));
+
+  revalidatePath("/");
+};
+
+export const check = async (id: string) => {
+  const entries = await list();
+  const entry = entries.find((entry) => entry.id === id);
+
+  if (!entry) {
+    return "Entry not found";
+  }
+
+  entry.completed = !entry.completed;
+
+  await fs.writeFile("data.csv", toCSV(entries));
+
+  revalidatePath("/");
+};
+
+export const remove = async (id: string) => {
+  const entries = await list();
+  const newEntries = entries.filter((entry) => entry.id !== id);
 
   await fs.writeFile("data.csv", toCSV(newEntries));
-}
 
+  revalidatePath("/");
+};

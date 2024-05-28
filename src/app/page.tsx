@@ -1,18 +1,16 @@
-import { TodoList } from "@/components/TodoList";
-import * as actions from "./actions";
-
-import fs from "node:fs/promises";
-import { fromCSV } from "@/models/entry";
+import { Todo } from "@/components/Todo";
+import { check, list, create, remove } from "./actions";
 
 export default async function Home() {
-  const data = await fs.readFile("data.csv", "utf-8");
-  const entries = fromCSV(data);
+  const entriesPromise = list();
 
   return (
     <div className="max-w-screen-sm mx-auto py-8">
-      <TodoList
-        entries={entries}
-        compose={actions.createEntry}
+      <Todo
+        entries={entriesPromise}
+        compose={create}
+        check={check}
+        remove={remove}
       />
     </div>
   );

@@ -1,6 +1,9 @@
-"use client"
+"use client";
 
-import { FC, useActionState, useId, useState } from "react";
+import clsx from "clsx";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { FC, useId, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 export type TodoComposerProps = {
   readonly className?: string;
@@ -29,9 +32,24 @@ export const TodoComposer: FC<TodoComposerProps> = (props) => {
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
-
-        <button type="submit" className="bg-black text-white px-3 py-1.5 rounded-r">Add</button>
+        <AddButton />
       </div>
     </form>
   );
-}
+};
+
+export const AddButton = () => {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      className={clsx("bg-black text-white px-3 py-1.5 rounded-r", {
+        "cursor-not-allowed bg-black/80": pending,
+      })}
+      aria-disabled={pending}
+    >
+      <PlusIcon className="size-6" />
+    </button>
+  );
+};
