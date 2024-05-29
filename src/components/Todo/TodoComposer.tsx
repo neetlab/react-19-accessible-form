@@ -1,20 +1,22 @@
 "use client";
 
 import clsx from "clsx";
-import { PlusIcon } from "@heroicons/react/16/solid";
+import { PlusIcon, ExclamationCircleIcon } from "@heroicons/react/16/solid";
 import { FC, KeyboardEventHandler, useId } from "react";
 import { useFormStatus } from "react-dom";
 
 
 export type TodoComposerProps = {
   readonly className?: string;
-  readonly action: (fd: FormData) => Promise<void>;
+  readonly error?: string;
+  readonly action: (fd: FormData) => void;
 };
 
 export const TodoComposer: FC<TodoComposerProps> = (props) => {
-  const { className, action } = props;
+  const { className, action, error } = props;
 
   const inputId = useId();
+  const errorId = useId();
 
   const handleKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter" && e.metaKey) {
@@ -29,20 +31,33 @@ export const TodoComposer: FC<TodoComposerProps> = (props) => {
 
   return (
     <form className={className} action={action}>
-      <label htmlFor={inputId}>
+      <label htmlFor={inputId} className="sr-only">
         新しいタスクを追加
       </label>
 
-      <div className="flex mt-1">
+      <div className="flex">
         <input
           id={inputId}
           type="text"
           name="title"
-          placeholder=""
-          className="w-full border-zinc-400 border border-r-0 px-3 py-1.5 rounded-l"
+          placeholder="例: 部屋の掃除をする"
+          className="w-full p-2 border-zinc-300 border border-r-0 rounded rounded-r-none"
           onKeyDown={handleKeydown}
+          aria-invalid={error != null}
+          aria-describedby={errorId}
         />
         <AddButton />
+      </div>
+
+      <div role="alert" id={errorId}>
+        {
+          error != null && (
+            <p className="mt-1 text-red-500 text-sm">
+              <ExclamationCircleIcon className="size-4 inline-block mr-1" aria-hidden />
+              {error}
+            </p>
+          )
+        }
       </div>
     </form>
   );
@@ -54,12 +69,13 @@ export const AddButton = () => {
   return (
     <button
       type="submit"
-      className={clsx("bg-black text-white px-3 py-1.5 rounded-r", {
+      className={clsx("bg-black text-white p-2 rounded rounded-l-none", {
         "cursor-not-allowed bg-black/80": pending,
       })}
+      aria-label="追加"
       aria-disabled={pending}
     >
-      <PlusIcon className="size-6" aria-label="追加" />
+      <PlusIcon className="size-6"/>
     </button>
   );
 };

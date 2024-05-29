@@ -16,8 +16,8 @@ export const list = async () => {
 export const create = async (fd: FormData) => {
   const title = fd.get("title") as string;
 
-  if (title.length === 0) {
-    return "Title is required"
+  if (title.length < 4) {
+    return "タスクは4文字以上で入力してください";
   }
 
   const entry = {

@@ -30,10 +30,18 @@ export const TodoListItem = (props: TodoListItemProps) => {
   };
 
   return (
-    <div className="flex items-center justify-between cursor-pointer hover:bg-zinc-100 rounded transition px-2 -mx-2 py-1">
-      <label className="block flex-1 cursor-pointer">
+    <div
+      className="flex items-center justify-between hover:bg-zinc-100 transition focus:bg-zinc-100"
+      tabIndex={-1}
+    >
+      <label
+        className={clsx(
+          "block flex-1 cursor-pointer px-2 py-1.5",
+          optimisticCompleted ? "opacity-50" : ""
+        )}
+      >
         <input
-          className="mr-1.5"
+          className="mr-2 mx-auto"
           type="checkbox"
           checked={optimisticCompleted}
           onChange={handleChange}
@@ -44,8 +52,12 @@ export const TodoListItem = (props: TodoListItemProps) => {
         </span>
       </label>
 
-      <button className="text-zinc-500" onClick={handleRemove}>
-        <XMarkIcon className="size-6" aria-label="削除" />
+      <button
+        className="text-zinc-500 pr-2"
+        onClick={handleRemove}
+        aria-label="削除"
+      >
+        <XMarkIcon className="size-6" />
       </button>
     </div>
   );

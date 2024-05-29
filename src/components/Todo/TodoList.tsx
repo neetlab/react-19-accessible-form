@@ -1,10 +1,11 @@
 "use client";
 
-import { FC, use, useOptimistic } from "react";
+import { FC, Ref, RefAttributes, RefObject, use, useOptimistic } from "react";
 import { Entry } from "../../models/entry";
 import { TodoListItem } from "./TodoListItem";
+import clsx from "clsx";
 
-export type TodoListProps = {
+export type TodoListProps = RefAttributes<HTMLDivElement> & {
   readonly className?: string;
   readonly entries: Promise<readonly Entry[]>;
   readonly onCheck: (id: string) => Promise<void>;
@@ -12,7 +13,7 @@ export type TodoListProps = {
 };
 
 export const TodoList: FC<TodoListProps> = (props) => {
-  const { className } = props;
+  const { className, ref } = props;
 
   const entries = use(props.entries);
   const [optimisticEntries, setOptimisticEntries] = useOptimistic(entries);
@@ -25,24 +26,37 @@ export const TodoList: FC<TodoListProps> = (props) => {
   };
 
   return (
-    <>
-      <p className="text-zinc-600 leading-relaxed">
-        {optimisticEntries.length === 0
-          ? "まだタスクはありません"
-          : `${optimisticEntries.length}件のタスクがあります`}
+    <div ref={ref}>
+      <p>
+        {optimisticEntries.length === 0 ? (
+          "まだタスクはありません"
+        ) : (
+          <>
+            <span className="tabular-nums">{optimisticEntries.length}件</span>
+            のタスク
+          </>
+        )}
       </p>
 
-      <ul className={className}>
-        {optimisticEntries.map((entry) => (
-          <TodoListItem
-            key={entry.id}
-            entry={entry}
-            onCheck={() => props.onCheck(entry.id)}
-            onRemove={() => handleRemove(entry.id)}
-          />
-        ))}
-      </ul>
-    </>
+      {optimisticEntries.length > 0 && (
+        <ul
+          className={clsx(
+            "mt-1 border border-zinc-300 rounded divide-y divide-zinc-300",
+            className
+          )}
+        >
+          {optimisticEntries.map((entry) => (
+            <li key={entry.id}>
+              <TodoListItem
+                entry={entry}
+                onCheck={() => props.onCheck(entry.id)}
+                onRemove={() => handleRemove(entry.id)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 };
 
