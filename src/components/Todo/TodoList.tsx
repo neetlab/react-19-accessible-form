@@ -1,7 +1,6 @@
 "use client";
 
-import clsx from "clsx";
-import { FC, startTransition, use, useOptimistic } from "react";
+import { FC, use, useOptimistic } from "react";
 import { Entry } from "../../models/entry";
 import { TodoListItem } from "./TodoListItem";
 
@@ -19,21 +18,21 @@ export const TodoList: FC<TodoListProps> = (props) => {
   const [optimisticEntries, setOptimisticEntries] = useOptimistic(entries);
 
   const handleRemove = async (id: string) => {
-    setOptimisticEntries((entries) => entries.filter((entry) => entry.id !== id));
+    setOptimisticEntries((entries) =>
+      entries.filter((entry) => entry.id !== id)
+    );
     await props.onRemove(id);
-  }
+  };
 
   return (
     <>
       <p className="text-zinc-600 leading-relaxed">
-        {
-          optimisticEntries.length === 0 ? "No items to display" :
-          optimisticEntries.length === 1 ? "You have 1 item in your list" :
-          `You have ${optimisticEntries.length} items in your list`
-        }
+        {optimisticEntries.length === 0
+          ? "まだタスクはありません"
+          : `${optimisticEntries.length}件のタスクがあります`}
       </p>
 
-      <ul className={clsx("space-y-1", className)}>
+      <ul className={className}>
         {optimisticEntries.map((entry) => (
           <TodoListItem
             key={entry.id}
@@ -43,6 +42,23 @@ export const TodoList: FC<TodoListProps> = (props) => {
           />
         ))}
       </ul>
+    </>
+  );
+};
+
+export const TodoListPlaceholder: FC = () => {
+  return (
+    <>
+      <div className="w-48 bg-zinc-200 animate-pulse rounded h-4" />
+
+      <div className="space-y-2 mt-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="w-full bg-zinc-200 animate-pulse rounded h-4"
+          />
+        ))}
+      </div>
     </>
   );
 };
