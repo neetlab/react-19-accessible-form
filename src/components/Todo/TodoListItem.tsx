@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { Entry } from "../../models/entry";
-import { startTransition, useId, useOptimistic } from "react";
+import { startTransition, useOptimistic } from "react";
 
 export type TodoListItemProps = {
   readonly entry: Entry;

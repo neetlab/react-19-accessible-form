@@ -62,7 +62,7 @@ export const TodoList: FC<TodoListProps> = (props) => {
 
 export const TodoListPlaceholder: FC = () => {
   return (
-    <>
+    <div role="presentation">
       <div className="w-48 bg-zinc-200 animate-pulse rounded h-4" />
 
       <div className="space-y-2 mt-4">
@@ -73,6 +73,6 @@ export const TodoListPlaceholder: FC = () => {
           />
         ))}
       </div>
-    </>
+    </div>
   );
 };

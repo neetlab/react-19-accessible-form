@@ -5,15 +5,14 @@ import { PlusIcon, ExclamationCircleIcon } from "@heroicons/react/16/solid";
 import { FC, KeyboardEventHandler, useId } from "react";
 import { useFormStatus } from "react-dom";
 
-
 export type TodoComposerProps = {
   readonly className?: string;
   readonly error?: string;
-  readonly action: (fd: FormData) => void;
+  readonly onSubmit: (fd: FormData) => void;
 };
 
 export const TodoComposer: FC<TodoComposerProps> = (props) => {
-  const { className, action, error } = props;
+  const { className, onSubmit, error } = props;
 
   const inputId = useId();
   const errorId = useId();
@@ -27,10 +26,10 @@ export const TodoComposer: FC<TodoComposerProps> = (props) => {
       e.preventDefault();
       e.currentTarget.form.requestSubmit();
     }
-  }
+  };
 
   return (
-    <form className={className} action={action}>
+    <form className={className} action={onSubmit}>
       <label htmlFor={inputId} className="sr-only">
         新しいタスクを追加
       </label>
@@ -49,16 +48,17 @@ export const TodoComposer: FC<TodoComposerProps> = (props) => {
         <AddButton />
       </div>
 
-      <div role="alert" id={errorId}>
-        {
-          error != null && (
-            <p className="mt-1 text-red-500 text-sm">
-              <ExclamationCircleIcon className="size-4 inline-block mr-1" aria-hidden />
-              {error}
-            </p>
-          )
-        }
-      </div>
+      {error != null && (
+        <div role="alert" id={errorId}>
+          <p className="mt-1 text-red-500 text-sm">
+            <ExclamationCircleIcon
+              className="size-4 inline-block mr-1"
+              aria-hidden
+            />
+            {error}
+          </p>
+        </div>
+      )}
     </form>
   );
 };
@@ -70,12 +70,12 @@ export const AddButton = () => {
     <button
       type="submit"
       className={clsx("bg-black text-white p-2 rounded rounded-l-none", {
-        "cursor-not-allowed bg-black/80": pending,
+        "cursor-not-allowed bg-black/50": pending,
       })}
+      disabled={pending}
       aria-label="追加"
-      aria-disabled={pending}
     >
-      <PlusIcon className="size-6"/>
+      <PlusIcon className="size-6" />
     </button>
   );
 };

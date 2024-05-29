@@ -33,7 +33,7 @@ export const Todo: FC<TodoProps> = (props) => {
     <section aria-labelledby={headingId}>
       <h2 id={headingId} className="text-2xl font-bold">タスク一覧</h2>
 
-      <TodoComposer className="mt-4" action={submitAction} error={error} />
+      <TodoComposer className="mt-4" error={error} onSubmit={submitAction} />
 
       <div className="mt-4">
         <Suspense fallback={<TodoListPlaceholder />}>
