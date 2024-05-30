@@ -1,58 +1,56 @@
-"use server";
+const EXISTING_USERS = ["alice@example.com", "bob@example.com"];
 
-import fs from "node:fs/promises";
-import { randomUUID } from "node:crypto";
-import { setTimeout } from "node:timers/promises";
+export type CreateUserErrors = Array<
+  | {
+      field: "email";
+      message: string;
+    }
+  | {
+      field: "password";
+      message: string;
+    }
+>;
 
-import { Entry, fromCSV, toCSV } from "@/models/entry";
-import { revalidatePath } from "next/cache";
+export const createUser = async (
+  fd: FormData
+): Promise<CreateUserErrors | undefined> => {
+  "use server";
 
-export const list = async () => {
-  await setTimeout(1000);
-  const entries = await fs.readFile("data.csv", "utf-8");
-  return fromCSV(entries);
-};
+  const email = fd.get("email") as string;
+  const password = fd.get("password") as string;
 
-export const create = async (fd: FormData) => {
-  const title = fd.get("title") as string;
+  const errors: CreateUserErrors = [];
 
-  if (title.length < 4) {
-    return "タスクは4文字以上で入力してください";
+  if (EXISTING_USERS.includes(email)) {
+    errors.push({
+      field: "email",
+      message: "既に登録されているメールアドレスです",
+    });
   }
 
-  const entry = {
-    id: randomUUID(),
-    title,
-    completed: false,
-  } satisfies Entry;
-
-  const entries = await list();
-  const newEntries = [...entries, entry];
-  await fs.writeFile("data.csv", toCSV(newEntries));
-
-  revalidatePath("/");
-};
-
-export const check = async (id: string) => {
-  const entries = await list();
-  const entry = entries.find((entry) => entry.id === id);
-
-  if (!entry) {
-    return "Entry not found";
+  if (password.length < 20) {
+    errors.push({
+      field: "password",
+      message: "パスワードは20文字以上で入力してください",
+    });
   }
 
-  entry.completed = !entry.completed;
+  if (!/[!@#$%^&*]/.test(password)) {
+    errors.push({
+      field: "password",
+      message: "パスワードには記号を含めてください",
+    });
+  }
 
-  await fs.writeFile("data.csv", toCSV(entries));
+  if (errors.length > 0) {
+    return errors;
+  }
 
-  revalidatePath("/");
-};
+  const user = {
+    email,
+    password
+  }
 
-export const remove = async (id: string) => {
-  const entries = await list();
-  const newEntries = entries.filter((entry) => entry.id !== id);
-
-  await fs.writeFile("data.csv", toCSV(newEntries));
-
-  revalidatePath("/");
+  console.info(`アカウント作成: ${JSON.stringify(user)}`);
+  return [];
 };
