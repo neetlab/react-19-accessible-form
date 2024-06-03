@@ -28,7 +28,7 @@ export const UserForm: FC<UserFormProps> = (props) => {
     .map((error) => error.message);
 
   return (
-    <form action={submitAction} className="border border-black rounded p-4">
+    <form action={submitAction} className="border border-black rounded p-4 bg-white">
       <h2 className="text-2xl leading-tight font-bold">ユーザー登録</h2>
 
       <p className="text-zinc-500 leading-relaxed">

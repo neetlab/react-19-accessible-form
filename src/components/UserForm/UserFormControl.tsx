@@ -20,14 +20,14 @@ export const UserFormControl: FC<UserFormControlProps> = (props) => {
   return (
     <div className={className}>
       <span className="block leading-relaxed">{title}</span>
+      {description && <p className="text-zinc-500">{description}</p>}
+
       <input
         {...inputProps}
         className={clsx("border border-black rounded px-2 py-1 w-full", {
           "border-red-500": errors.length > 0,
         })}
       />
-
-      {description && <p className="text-zinc-500 mt-1">{description}</p>}
 
       {errors.length > 0 && (
         <div className="text-red-500 mt-1">
