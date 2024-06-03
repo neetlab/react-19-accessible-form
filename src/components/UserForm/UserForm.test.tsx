@@ -56,31 +56,19 @@ test("エラーが認識される", async () => {
     })
   ).toBeInTheDocument();
 
-  await userEvent.type(
-    screen.getByRole("textbox", {
-      name: "メールアドレス",
-      description: "ログインに使用します",
-    }),
-    "foo@example.com"
-  );
-  await userEvent.type(screen.getByLabelText("パスワード"), "pass");
+  const email = screen.getByRole("textbox", {
+    name: "メールアドレス",
+    description: "ログインに使用します",
+  })
+  const password = screen.getByLabelText("パスワード")
+
+  await userEvent.type(email, "foo@example.com");
+  await userEvent.type(password, "password");
   await userEvent.click(screen.getByRole("button", { name: "登録する" }));
 
-  expect(onSubmit).toHaveBeenCalled();
+  expect(email).toBeInvalid()
+  expect(email).toHaveAccessibleErrorMessage("メールアドレスが既に使用されています")
 
-  // expect(
-  //   screen.getByRole("alert", {
-  //     name: "エラー",
-  //     description: "2件のエラーがあります。フォームを修正してください。",
-  //   })
-  // ).toBeInTheDocument();
-
-  expect(
-    screen.getByRole("textbox", {
-      name: "メールアドレス",
-      description: "ログインに使用します",
-    })
-  ).toBeInvalid()
-
-  expect(screen.getByLabelText("パスワード")).toBeInvalid()
+  expect(password).toBeInvalid()
+  expect(password).toHaveAccessibleErrorMessage("パスワードは8文字以上で入力してください")
 });
