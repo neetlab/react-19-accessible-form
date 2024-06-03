@@ -1,9 +1,9 @@
 "use client";
 
 import { FC, useActionState } from "react";
-import clsx from "clsx";
 
 import { CreateUserErrors } from "@/app/actions";
+import { UserFormControl } from "./UserFormControl";
 
 export type UserFormProps = {
   readonly onSubmit: (formData: FormData) => Promise<CreateUserErrors>;
@@ -19,8 +19,13 @@ export const UserForm: FC<UserFormProps> = (props) => {
     []
   );
 
-  const emailErrors = errors.filter((error) => error.field === "email");
-  const passwordErrors = errors.filter((error) => error.field === "password");
+  const emailErrors = errors
+    .filter((error) => error.field === "email")
+    .map((error) => error.message);
+
+  const passwordErrors = errors
+    .filter((error) => error.field === "password")
+    .map((error) => error.message);
 
   return (
     <form action={submitAction} className="border border-black rounded p-4">
@@ -31,39 +36,22 @@ export const UserForm: FC<UserFormProps> = (props) => {
       </p>
 
       <div className="space-y-2 mt-4">
-        <div>
-          <span className="block leading-relaxed">メールアドレス</span>
-          <input
-            type="email"
-            name="email"
-            required
-            className={clsx("border border-black rounded px-2 py-1 w-full", {
-              "border-red-500": emailErrors.length > 0,
-            })}
-          />
-          {emailErrors.length > 0 && (
-            <div className="text-red-500">
-              {emailErrors.map((error) => error.message).join(", ")}
-            </div>
-          )}
-        </div>
+        <UserFormControl
+          title="メールアドレス"
+          description="ログインに使用します"
+          name="email"
+          required
+          errors={emailErrors}
+        />
 
-        <div>
-          <span className="block leading-relaxed">パスワード</span>
-          <input
-            type="password"
-            name="password"
-            required
-            className={clsx("border border-black rounded px-2 py-1 w-full", {
-              "border-red-500": passwordErrors.length > 0,
-            })}
-          />
-          {passwordErrors.length > 0 && (
-            <div className="text-red-500">
-              {passwordErrors.map((error) => error.message).join(", ")}
-            </div>
-          )}
-        </div>
+        <UserFormControl
+          title="パスワード"
+          description="8文字以上で入力してください"
+          name="password"
+          type="password"
+          required
+          errors={passwordErrors}
+        />
       </div>
 
       <div className="mt-4 flex justify-end">

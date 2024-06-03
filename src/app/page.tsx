@@ -1,4 +1,4 @@
-import { UserForm } from "@/components/UserForm/UserForm.ok";
+import { UserForm } from "@/components/UserForm/UserForm";
 import { createUser } from "./actions";
 
 export default async function Home() {
