@@ -1,19 +1,21 @@
 "use client";
 
-import { FC, useActionState } from "react";
-
 import { CreateUserErrors } from "@/app/actions";
-import { UserFormControl } from "./UserFormControl";
+import { FC, useActionState, useId } from "react";
+import { SignupFormControl } from "./SignupFormControl.ok";
 
-export type UserFormProps = {
+export type SignupFormProps = {
   readonly onSubmit: (formData: FormData) => Promise<CreateUserErrors>;
 };
 
-export const UserForm: FC<UserFormProps> = (props) => {
+export const SignupForm: FC<SignupFormProps> = (props) => {
   const { onSubmit } = props;
 
+  const headingId = useId();
+  const descriptionid = useId();
+
   const [errors, submitAction] = useActionState<CreateUserErrors, FormData>(
-    async (_previousState, formData) => {
+    async (_, formData) => {
       return await onSubmit(formData);
     },
     []
@@ -28,15 +30,31 @@ export const UserForm: FC<UserFormProps> = (props) => {
     .map((error) => error.message);
 
   return (
-    <form action={submitAction} className="border border-black rounded p-4 bg-white">
-      <h2 className="text-2xl leading-tight font-bold">ユーザー登録</h2>
+    <form
+      action={submitAction}
+      aria-labelledby={headingId}
+      aria-describedby={descriptionid}
+      className="border border-black rounded p-4"
+    >
+      <h2 id={headingId} className="text-2xl leading-tight font-bold">
+        ユーザー登録
+      </h2>
 
-      <p className="text-zinc-500 leading-relaxed">
+      <p id={descriptionid} className="text-zinc-500 leading-relaxed">
         ユーザー登録を行うと、サービスがもっと便利になります。
       </p>
 
+      {errors.length > 0 && (
+        <div
+          role="alert"
+          className="mt-2 bg-red-100 text-red-500 py-2 px-3 rounded"
+        >
+          {errors.length}件のエラーがあります。フォームを修正してください。
+        </div>
+      )}
+
       <div className="space-y-2 mt-4">
-        <UserFormControl
+        <SignupFormControl
           title="メールアドレス"
           description="ログインに使用します"
           name="email"
@@ -44,7 +62,7 @@ export const UserForm: FC<UserFormProps> = (props) => {
           errors={emailErrors}
         />
 
-        <UserFormControl
+        <SignupFormControl
           title="パスワード"
           description="8文字以上で入力してください"
           name="password"
@@ -55,7 +73,10 @@ export const UserForm: FC<UserFormProps> = (props) => {
       </div>
 
       <div className="mt-4 flex justify-end">
-        <button type="submit" className="bg-black text-white rounded px-4 py-2">
+        <button
+          type="submit"
+          className="bg-black text-white rounded px-4 py-2 forced-colors:bg-[ButtonFace] forced-colors:border forced-colors:border-[ButtonBorder] forced-colors:text-[ButtonText]"
+        >
           登録する
         </button>
       </div>

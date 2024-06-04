@@ -2,13 +2,13 @@ import clsx from "clsx";
 
 import { ComponentProps, FC, useId } from "react";
 
-export type UserFormControlProps = ComponentProps<"input"> & {
+export type SignupFormControlProps = ComponentProps<"input"> & {
   readonly title: string;
   readonly description?: string;
   readonly errors?: readonly string[];
 };
 
-export const UserFormControl: FC<UserFormControlProps> = (props) => {
+export const SignupFormControl: FC<SignupFormControlProps> = (props) => {
   const { title, description, className, errors = [], ...inputProps } = props;
 
   const labelId = useId();

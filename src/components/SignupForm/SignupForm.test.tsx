@@ -1,12 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { UserForm } from "./UserForm.ok";
+import { SignupForm } from "./SignupForm.ok";
 import { CreateUserErrors } from "@/app/actions";
 
 test("フォームが送信される", async () => {
   const onSubmit = jest.fn();
 
-  render(<UserForm onSubmit={onSubmit} />);
+  render(<SignupForm onSubmit={onSubmit} />);
 
   expect(
     screen.getByRole("form", {
@@ -47,7 +47,7 @@ test("エラーが認識される", async () => {
     ]
   });
 
-  render(<UserForm onSubmit={onSubmit} />);
+  render(<SignupForm onSubmit={onSubmit} />);
 
   expect(
     screen.getByRole("form", {
